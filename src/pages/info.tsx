@@ -1,7 +1,9 @@
 import { Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
+import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
 import { FC, Reducer, useReducer } from 'react';
 import style from './info.module.css';
+import locales from './locales';
 
 const initialState = {
   isEditing: false,
@@ -46,6 +48,8 @@ type Action =
 
 const Info: FC = function Info() {
   const [{ input, isEditing }, dispatch] = useReducer(reducer, initialState);
+  const { locale } = useLocaleContext();
+  const t = locales[locale as keyof typeof locales] ?? locales.en;
 
   const config = [
     ['username'], //
@@ -61,7 +65,7 @@ const Info: FC = function Info() {
             <Grid key={key} item xs={8} lg="auto">
               <TextField
                 variant="standard"
-                label={key}
+                label={t[key]}
                 disabled={!isEditing}
                 value={input[key]}
                 onChange={(e) => {
@@ -83,7 +87,7 @@ const Info: FC = function Info() {
                   // TODO: save
                   dispatch({ type: 'toggle-edit' });
                 }}>
-                Save
+                {t.save}
               </Button>
 
               <Button
@@ -92,7 +96,7 @@ const Info: FC = function Info() {
                   // TODO: cancel
                   dispatch({ type: 'toggle-edit' });
                 }}>
-                Cancel
+                {t.cancel}
               </Button>
             </>
           ) : (
@@ -100,7 +104,7 @@ const Info: FC = function Info() {
               onClick={() => {
                 dispatch({ type: 'toggle-edit' });
               }}>
-              Edit
+              {t.edit}
             </Button>
           )}
         </Grid>

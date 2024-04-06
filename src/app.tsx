@@ -1,32 +1,27 @@
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import { LocaleProvider } from '@arcblock/ux/lib/Locale/context';
-import TodoList from './pages/todo-list';
+import { ThemeProvider } from '@arcblock/ux/lib/Theme';
 import Layout from './components/layout';
 import { SessionProvider } from './contexts/session';
-
-function App() {
-  return (
-    <div className="app">
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="" element={<TodoList />} />
-        </Route>
-      </Routes>
-    </div>
-  );
-}
+import Info from './pages/info';
 
 export default function WrappedApp() {
   // While the blocklet is deploy to a sub path, this will be work properly.
-  const basename = window?.blocklet?.prefix || '/';
+  const basename = window.blocklet?.prefix ?? '/';
 
   return (
-    <SessionProvider>
-      <LocaleProvider translations={{}}>
-        <Router basename={basename}>
-          <App />
-        </Router>
-      </LocaleProvider>
-    </SessionProvider>
+    <ThemeProvider>
+      <SessionProvider>
+        <LocaleProvider translations={{}}>
+          <BrowserRouter basename={basename}>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route path="" element={<Info />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </LocaleProvider>
+      </SessionProvider>
+    </ThemeProvider>
   );
 }

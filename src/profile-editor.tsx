@@ -1,15 +1,13 @@
 import { Container, Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
-import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
 import ActivityIndicator from '@arcblock/ux/lib/ActivityIndicator';
-import { FC, Reducer, useEffect, useReducer } from 'react';
+import { FC, Reducer, useContext, useEffect, useReducer } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Toast from '@arcblock/ux/lib/Toast';
-import style from './info.module.css';
-import locales from './locales';
-import axios from './libs/api';
+import { axios } from './utils';
 import { Profile } from '../common/types';
 import rules from '../common/rules';
+import { MyLocaleContext } from './context';
 
 type State = {
   isEditing: boolean;
@@ -61,16 +59,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
   }
 };
 
-const Info: FC = function Info() {
+const ProfileEditor: FC = function Info() {
   const [{ isEditing, isSaving, current }, dispatch] = useReducer(reducer, initialState);
-  const { locale } = useLocaleContext();
-  const t = locales[locale as keyof typeof locales] ?? locales.en;
+  const { t } = useContext(MyLocaleContext);
 
-  const config = [
-    ['username'], //
-    ['email'],
-    ['phone'],
-  ] as const;
   const {
     setFocus,
     register,
@@ -83,8 +75,9 @@ const Info: FC = function Info() {
     dispatch({ type: 'start-save' });
     await axios.put('/api/profile', profile);
     dispatch({ type: 'commit', data: profile });
-
-    Toast.success(t.saveSucceed);
+    Toast.success(t.saveSucceed, {
+      autoHideDuration: 2000,
+    });
   };
 
   useEffect(() => {
@@ -103,11 +96,16 @@ const Info: FC = function Info() {
   }, [isEditing, setFocus]);
 
   return (
-    <Container className={style.container} maxWidth="lg">
+    <Container
+      maxWidth="lg"
+      style={{
+        padding: 20,
+        height: 'calc(100vh - 64px - 68px)', // exclude header and footer
+      }}>
       {current ? (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            {config.map(([key]) => {
+            {(['username', 'email', 'phone'] as const).map((key) => {
               return (
                 <Grid key={key} item xs={12} sm={6} md={4}>
                   <TextField
@@ -182,4 +180,4 @@ const Info: FC = function Info() {
   );
 };
 
-export default Info;
+export default ProfileEditor;

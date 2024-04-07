@@ -1,5 +1,0 @@
-.container {
-  margin: 0 auto;
-  padding: 20px;
-  height: calc(100vh - 64px - 68px); /* exclude header and footer */
-}

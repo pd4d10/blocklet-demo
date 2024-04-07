@@ -1,12 +1,10 @@
 import { Footer, Header } from '@blocklet/ui-react';
-import { FC } from 'react';
-import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
-import Info from './info';
-import locales from './locales';
+import { FC, useContext } from 'react';
+import ProfileEditor from './profile-editor';
+import { MyLocaleContext } from './context';
 
 const App: FC = function App() {
-  const { locale } = useLocaleContext();
-  const t = locales[locale as keyof typeof locales] ?? locales.en;
+  const { t } = useContext(MyLocaleContext);
 
   return (
     <>
@@ -21,7 +19,7 @@ const App: FC = function App() {
         theme={undefined}
         hideNavMenu={undefined}
       />
-      <Info />
+      <ProfileEditor />
       <Footer
         // no meaning, for TS types
         meta={undefined}

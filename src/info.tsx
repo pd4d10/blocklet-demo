@@ -1,4 +1,4 @@
-import { Grid, TextField } from '@mui/material';
+import { Container, Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
 import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
 import { FC, Reducer, useReducer } from 'react';
@@ -58,13 +58,13 @@ const Info: FC = function Info() {
   ] as const;
 
   return (
-    <div className={style.container}>
-      <Grid container spacing={2}>
+    <Container className={style.container} maxWidth="lg">
+      <Grid container spacing={4}>
         {config.map(([key]) => {
           return (
-            <Grid key={key} item xs={8} lg="auto">
+            <Grid key={key} item xs={12} sm={6} md={4}>
               <TextField
-                variant="standard"
+                fullWidth
                 label={t[key]}
                 disabled={!isEditing}
                 value={input[key]}
@@ -76,8 +76,7 @@ const Info: FC = function Info() {
           );
         })}
       </Grid>
-      <Grid container spacing={2}>
-        {' '}
+      <Grid container spacing={4}>
         <Grid item xs={8} lg="auto">
           {isEditing ? (
             <>
@@ -89,9 +88,8 @@ const Info: FC = function Info() {
                 }}>
                 {t.save}
               </Button>
-
               <Button
-                variant="contained"
+                variant="outlined"
                 onClick={() => {
                   // TODO: cancel
                   dispatch({ type: 'toggle-edit' });
@@ -101,6 +99,7 @@ const Info: FC = function Info() {
             </>
           ) : (
             <Button
+              variant="contained"
               onClick={() => {
                 dispatch({ type: 'toggle-edit' });
               }}>
@@ -109,7 +108,7 @@ const Info: FC = function Info() {
           )}
         </Grid>
       </Grid>
-    </div>
+    </Container>
   );
 };
 

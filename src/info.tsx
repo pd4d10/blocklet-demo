@@ -1,6 +1,7 @@
-import { CircularProgress, Container, Grid, TextField } from '@mui/material';
+import { Container, Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
 import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
+import ActivityIndicator from '@arcblock/ux/lib/ActivityIndicator';
 import { FC, Reducer, useEffect, useReducer } from 'react';
 import Toast from '@arcblock/ux/lib/Toast';
 import style from './info.module.css';
@@ -132,7 +133,7 @@ const Info: FC = function Info() {
         </>
       ) : (
         <Grid display="flex" justifyContent="center" alignItems="center">
-          <CircularProgress style={{ marginTop: 100 }} />
+          <ActivityIndicator />
         </Grid>
       )}
     </Container>

@@ -12,6 +12,8 @@ axios.interceptors.request.use(
 );
 
 const en = {
+  connect: 'Connnect Wallet',
+  connectInfo: 'You need to connect the DID Wallet to access the website.',
   profile: 'Profile',
   username: 'Username',
   email: 'Email',
@@ -25,6 +27,8 @@ const en = {
 };
 
 const zh: typeof en = {
+  connect: '连接钱包',
+  connectInfo: '您需要连接 DID 钱包才能访问网站',
   profile: '个人信息',
   username: '用户名',
   email: '邮箱',

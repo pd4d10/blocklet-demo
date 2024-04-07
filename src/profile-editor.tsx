@@ -1,4 +1,4 @@
-import { Container, Grid, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
 import ActivityIndicator from '@arcblock/ux/lib/ActivityIndicator';
 import { FC, Reducer, useContext, useEffect, useReducer } from 'react';
@@ -97,92 +97,87 @@ const ProfileEditor: FC = function Info() {
     }
   }, [isEditing, setFocus]);
 
+  if (!current) {
+    return (
+      <Grid display="flex" justifyContent="center" alignItems="center">
+        <ActivityIndicator />
+      </Grid>
+    );
+  }
+
   return (
-    <Container
-      maxWidth="lg"
-      style={{
-        padding: 20,
-        height: 'calc(100vh - 64px - 68px)', // exclude header and footer
-      }}>
-      {current ? (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={2}>
-            {(['username', 'email', 'phone'] as const).map((key) => {
-              return (
-                <Grid key={key} item xs={12} sm={6} md={4}>
-                  <TextField
-                    style={isEditing ? {} : { paddingBottom: 8 }}
-                    variant={isEditing ? undefined : 'standard'}
-                    fullWidth
-                    label={t[key]}
-                    InputProps={{
-                      readOnly: !isEditing,
-                      endAdornment: isEditing ? undefined : (
-                        <CopyButton style={{ color: '#757575' }} locale={locale} content={getValues(key)} />
-                      ),
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    error={errors[key] != null}
-                    helperText={
-                      // eslint-disable-next-line no-nested-ternary
-                      errors[key]?.type === 'required'
-                        ? t.noEmpty
-                        : errors[key]?.type === 'validate'
-                          ? t.invalidFormat
-                          : undefined
-                    }
-                    {...register(key, {
-                      required: true,
-                      validate: (value) => rules[key]?.test(value) ?? true,
-                    })}
-                  />
-                </Grid>
-              );
-            })}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Grid container spacing={2}>
+        {(['username', 'email', 'phone'] as const).map((key) => {
+          return (
+            <Grid key={key} item xs={12} sm={6} md={4}>
+              <TextField
+                style={isEditing ? {} : { paddingBottom: 8 }}
+                variant={isEditing ? undefined : 'standard'}
+                fullWidth
+                label={t[key]}
+                InputProps={{
+                  readOnly: !isEditing,
+                  endAdornment: isEditing ? undefined : (
+                    <CopyButton style={{ color: '#757575' }} locale={locale} content={getValues(key)} />
+                  ),
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                error={errors[key] != null}
+                helperText={
+                  // eslint-disable-next-line no-nested-ternary
+                  errors[key]?.type === 'required'
+                    ? t.noEmpty
+                    : errors[key]?.type === 'validate'
+                      ? t.invalidFormat
+                      : undefined
+                }
+                {...register(key, {
+                  required: true,
+                  validate: (value) => rules[key]?.test(value) ?? true,
+                })}
+              />
+            </Grid>
+          );
+        })}
+      </Grid>
+      <Grid container spacing={2} style={{ paddingTop: 12 }}>
+        {isEditing ? (
+          <>
+            <Grid item xs="auto">
+              <Button disabled={isSaving} loading={isSaving} variant="contained" type="submit">
+                {t.save}
+              </Button>
+            </Grid>
+            <Grid item xs="auto">
+              <Button
+                disabled={isSaving}
+                variant="outlined"
+                onClick={(e: Event) => {
+                  e.preventDefault();
+                  reset();
+                  dispatch({ type: 'cancel' });
+                }}>
+                {t.cancel}
+              </Button>
+            </Grid>
+          </>
+        ) : (
+          <Grid item xs="auto">
+            <Button
+              variant="contained"
+              onClick={(e: Event) => {
+                e.preventDefault();
+                dispatch({ type: 'enter-edit' });
+              }}>
+              {t.edit}
+            </Button>
           </Grid>
-          <Grid container spacing={2} style={{ paddingTop: 12 }}>
-            {isEditing ? (
-              <>
-                <Grid item xs="auto">
-                  <Button disabled={isSaving} loading={isSaving} variant="contained" type="submit">
-                    {t.save}
-                  </Button>
-                </Grid>
-                <Grid item xs="auto">
-                  <Button
-                    disabled={isSaving}
-                    variant="outlined"
-                    onClick={(e: Event) => {
-                      e.preventDefault();
-                      reset();
-                      dispatch({ type: 'cancel' });
-                    }}>
-                    {t.cancel}
-                  </Button>
-                </Grid>
-              </>
-            ) : (
-              <Grid item xs="auto">
-                <Button
-                  variant="contained"
-                  onClick={(e: Event) => {
-                    e.preventDefault();
-                    dispatch({ type: 'enter-edit' });
-                  }}>
-                  {t.edit}
-                </Button>
-              </Grid>
-            )}
-          </Grid>
-        </form>
-      ) : (
-        <Grid display="flex" justifyContent="center" alignItems="center">
-          <ActivityIndicator />
-        </Grid>
-      )}
-    </Container>
+        )}
+      </Grid>
+    </form>
   );
 };
 

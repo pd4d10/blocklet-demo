@@ -1,10 +1,13 @@
 import { Footer, Header } from '@blocklet/ui-react';
 import { FC, useContext } from 'react';
+import { Container } from '@mui/material';
 import ProfileEditor from './profile-editor';
-import { MyLocaleContext } from './context';
+import { MyLocaleContext, SessionContext } from './context';
+import AuthGuard from './auth-guard';
 
 const App: FC = function App() {
   const { t } = useContext(MyLocaleContext);
+  const { session } = useContext<any>(SessionContext);
 
   return (
     <>
@@ -19,7 +22,15 @@ const App: FC = function App() {
         theme={undefined}
         hideNavMenu={undefined}
       />
-      <ProfileEditor />
+      <Container
+        maxWidth="lg"
+        style={{
+          padding: 20,
+          height: 'calc(100vh - 64px - 68px)', // exclude header and footer
+        }}>
+        {session.user ? <ProfileEditor /> : <AuthGuard />}
+      </Container>
+
       <Footer
         // no meaning, for TS types
         meta={undefined}

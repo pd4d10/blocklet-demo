@@ -8,6 +8,8 @@ const locales = {
     save: 'Save',
     cancel: 'Cancel',
     saveSucceed: 'Save Succeed',
+    noEmpty: 'Cannot be empty',
+    invalidFormat: 'Invalid format',
   },
   zh: {
     profile: '个人信息',
@@ -18,6 +20,8 @@ const locales = {
     save: '保存',
     cancel: '取消',
     saveSucceed: '保存成功',
+    noEmpty: '不能为空',
+    invalidFormat: '格式错误',
   },
 };
 

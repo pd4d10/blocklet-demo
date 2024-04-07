@@ -121,6 +121,14 @@ const Info: FC = function Info() {
                       shrink: true,
                     }}
                     error={errors[key] != null}
+                    helperText={
+                      // eslint-disable-next-line no-nested-ternary
+                      errors[key]?.type === 'required'
+                        ? t.noEmpty
+                        : errors[key]?.type === 'validate'
+                          ? t.invalidFormat
+                          : undefined
+                    }
                     {...register(key, {
                       required: true,
                       validate: (value) => rules[key]?.test(value) ?? true,

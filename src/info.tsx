@@ -1,9 +1,10 @@
 import { Container, Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
 import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
-import { FC, Reducer, useReducer } from 'react';
+import { FC, Reducer, useEffect, useReducer } from 'react';
 import style from './info.module.css';
 import locales from './locales';
+import axios from './libs/api';
 
 const initialState = {
   isEditing: false,
@@ -56,6 +57,14 @@ const Info: FC = function Info() {
     ['email'],
     ['phone'],
   ] as const;
+
+  useEffect(() => {
+    const init = async () => {
+      await axios.get('/api/profile');
+      // console.log(res);
+    };
+    init();
+  }, []);
 
   return (
     <Container className={style.container} maxWidth="lg">

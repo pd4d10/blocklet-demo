@@ -94,7 +94,7 @@ const Info: FC = function Info() {
     <Container className={style.container} maxWidth="lg">
       {current && input ? (
         <>
-          <Grid container spacing={4}>
+          <Grid container spacing={2}>
             {config.map(([key]) => {
               return (
                 <Grid key={key} item xs={12} sm={6} md={4}>
@@ -111,10 +111,10 @@ const Info: FC = function Info() {
               );
             })}
           </Grid>
-          <Grid container spacing={4}>
-            <Grid item xs={8} lg="auto">
-              {isEditing ? (
-                <>
+          <Grid container spacing={2} style={{ paddingTop: 12 }}>
+            {isEditing ? (
+              <>
+                <Grid item xs="auto">
                   <Button
                     disabled={isSaving}
                     loading={isSaving}
@@ -128,6 +128,8 @@ const Info: FC = function Info() {
                     }}>
                     {t.save}
                   </Button>
+                </Grid>
+                <Grid item xs="auto">
                   <Button
                     disabled={isSaving}
                     variant="outlined"
@@ -136,8 +138,10 @@ const Info: FC = function Info() {
                     }}>
                     {t.cancel}
                   </Button>
-                </>
-              ) : (
+                </Grid>
+              </>
+            ) : (
+              <Grid item xs="auto">
                 <Button
                   variant="contained"
                   onClick={() => {
@@ -145,8 +149,8 @@ const Info: FC = function Info() {
                   }}>
                   {t.edit}
                 </Button>
-              )}
-            </Grid>
+              </Grid>
+            )}
           </Grid>
         </>
       ) : (

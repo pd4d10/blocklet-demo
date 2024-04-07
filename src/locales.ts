@@ -7,6 +7,7 @@ const locales = {
     edit: 'Edit',
     save: 'Save',
     cancel: 'Cancel',
+    saveSucceed: 'Save Succeed',
   },
   zh: {
     profile: '个人信息',
@@ -16,6 +17,7 @@ const locales = {
     edit: '编辑',
     save: '保存',
     cancel: '取消',
+    saveSucceed: '保存成功',
   },
 };
 

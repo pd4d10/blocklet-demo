@@ -2,6 +2,7 @@ import { CircularProgress, Container, Grid, TextField } from '@mui/material';
 import Button from '@arcblock/ux/lib/Button';
 import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
 import { FC, Reducer, useEffect, useReducer } from 'react';
+import Toast from '@arcblock/ux/lib/Toast';
 import style from './info.module.css';
 import locales from './locales';
 import axios from './libs/api';
@@ -104,6 +105,7 @@ const Info: FC = function Info() {
                     variant="contained"
                     onClick={async () => {
                       await axios.put('/api/profile', input);
+                      Toast.success(t.saveSucceed);
                       dispatch({ type: 'commit' });
                     }}>
                     {t.save}

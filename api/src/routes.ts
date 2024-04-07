@@ -13,9 +13,13 @@ const router = Router();
 router.get('/user', middleware.user(), (req, res) => res.json(req.user ?? {}));
 
 router.get('/profile', middleware.user(), async (req, res) => {
-  const { user } = await authService.getUser(req.user!.did);
+  if (!req.user) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const { user } = await authService.getUser(req.user.did);
   if (!user.didSpace.endpoint) {
-    return res.status(404).send('DID Spaces endpoint does not exist. Log in again to complete the authorization');
+    return res.status(404).send('DID Spaces endpoint does not exist');
   }
 
   const spaceClient = new SpaceClient({ wallet, endpoint: user.didSpace.endpoint });
@@ -48,9 +52,13 @@ router.put('/profile', middleware.user(), async (req, res) => {
     }
   }
 
-  const { user } = await authService.getUser(req.user!.did);
+  if (!req.user) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const { user } = await authService.getUser(req.user.did);
   if (!user.didSpace.endpoint) {
-    return res.status(404).send('DID Spaces endpoint does not exist. Log in again to complete the authorization');
+    return res.status(404).send('DID Spaces endpoint does not exist');
   }
 
   const spaceClient = new SpaceClient({ wallet, endpoint: user.didSpace.endpoint });

@@ -3,6 +3,7 @@ import Button from '@arcblock/ux/lib/Button';
 import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
 import ActivityIndicator from '@arcblock/ux/lib/ActivityIndicator';
 import { FC, Reducer, useEffect, useReducer } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import Toast from '@arcblock/ux/lib/Toast';
 import style from './info.module.css';
 import locales from './locales';
@@ -13,14 +14,12 @@ type State = {
   isEditing: boolean;
   isSaving: boolean;
   current?: Profile;
-  input?: Profile;
 };
 type Action =
-  | { type: 'init'; profile: Profile }
+  | { type: 'init'; data: Profile }
   | { type: 'enter-edit' }
   | { type: 'start-save' }
-  | { type: 'add'; field: keyof Profile; value: string }
-  | { type: 'commit' }
+  | { type: 'commit'; data: Profile }
   | { type: 'cancel' };
 
 const initialState: State = {
@@ -32,8 +31,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case 'init':
       return {
         ...state,
-        current: action.profile,
-        input: action.profile,
+        current: action.data,
       };
     case 'enter-edit':
       return {
@@ -45,25 +43,16 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         isSaving: true,
       };
-    case 'add':
-      return {
-        ...state,
-        input: {
-          ...state.input,
-          [action.field]: action.value,
-        },
-      };
     case 'commit':
       return {
         ...state,
-        current: state.input,
+        current: action.data,
         isEditing: false,
         isSaving: false,
       };
     case 'cancel':
       return {
         ...state,
-        input: state.current,
         isEditing: false,
       };
     default:
@@ -72,7 +61,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 };
 
 const Info: FC = function Info() {
-  const [{ isEditing, isSaving, input, current }, dispatch] = useReducer(reducer, initialState);
+  const [{ isEditing, isSaving, current }, dispatch] = useReducer(reducer, initialState);
   const { locale } = useLocaleContext();
   const t = locales[locale as keyof typeof locales] ?? locales.en;
 
@@ -81,31 +70,49 @@ const Info: FC = function Info() {
     ['email'],
     ['phone'],
   ] as const;
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Profile>({ values: current });
+
+  const onSubmit: SubmitHandler<Profile> = async (profile) => {
+    dispatch({ type: 'start-save' });
+    await axios.put('/api/profile', profile);
+    dispatch({ type: 'commit', data: profile });
+
+    Toast.success(t.saveSucceed);
+  };
 
   useEffect(() => {
     const init = async () => {
       const res = await axios.get<Profile>('/api/profile');
-      dispatch({ type: 'init', profile: res.data });
+      dispatch({ type: 'init', data: res.data });
     };
     init();
   }, []);
 
   return (
     <Container className={style.container} maxWidth="lg">
-      {current && input ? (
-        <>
+      {current ? (
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             {config.map(([key]) => {
               return (
                 <Grid key={key} item xs={12} sm={6} md={4}>
                   <TextField
+                    variant={isEditing ? undefined : 'standard'}
                     fullWidth
                     label={t[key]}
-                    disabled={!isEditing}
-                    value={input[key]}
-                    onChange={(e) => {
-                      dispatch({ type: 'add', field: key, value: e.target.value });
+                    InputProps={{
+                      readOnly: !isEditing,
                     }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={errors[key] != null}
+                    {...register(key, { required: true })}
                   />
                 </Grid>
               );
@@ -115,17 +122,7 @@ const Info: FC = function Info() {
             {isEditing ? (
               <>
                 <Grid item xs="auto">
-                  <Button
-                    disabled={isSaving}
-                    loading={isSaving}
-                    variant="contained"
-                    onClick={async () => {
-                      dispatch({ type: 'start-save' });
-                      await axios.put('/api/profile', input);
-                      dispatch({ type: 'commit' });
-
-                      Toast.success(t.saveSucceed);
-                    }}>
+                  <Button disabled={isSaving} loading={isSaving} variant="contained" type="submit">
                     {t.save}
                   </Button>
                 </Grid>
@@ -133,7 +130,9 @@ const Info: FC = function Info() {
                   <Button
                     disabled={isSaving}
                     variant="outlined"
-                    onClick={() => {
+                    onClick={(e: Event) => {
+                      e.preventDefault();
+                      reset();
                       dispatch({ type: 'cancel' });
                     }}>
                     {t.cancel}
@@ -144,7 +143,8 @@ const Info: FC = function Info() {
               <Grid item xs="auto">
                 <Button
                   variant="contained"
-                  onClick={() => {
+                  onClick={(e: Event) => {
+                    e.preventDefault();
                     dispatch({ type: 'enter-edit' });
                   }}>
                   {t.edit}
@@ -152,7 +152,7 @@ const Info: FC = function Info() {
               </Grid>
             )}
           </Grid>
-        </>
+        </form>
       ) : (
         <Grid display="flex" justifyContent="center" alignItems="center">
           <ActivityIndicator />

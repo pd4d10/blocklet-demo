@@ -5,6 +5,7 @@ import { FC, Reducer, useEffect, useReducer } from 'react';
 import style from './info.module.css';
 import locales from './locales';
 import axios from './libs/api';
+import { Profile } from '../common/types';
 
 const initialState = {
   isEditing: false,
@@ -12,12 +13,12 @@ const initialState = {
     username: 'abc',
     email: 'def',
     phone: 'ghi',
-  },
+  } as Profile,
   input: {
     username: 'abc',
     email: 'def',
     phone: 'ghi',
-  },
+  } as Profile,
 };
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {

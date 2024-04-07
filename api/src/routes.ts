@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { GetObjectCommand, PutObjectCommand, SpaceClient } from '@did-space/client';
 import { streamToString } from '@did-space/core';
 import { authService, wallet } from './libs/auth';
+import { Profile } from '../../common/types';
 
 const PROFILE_KEY = 'profile.json';
 
@@ -19,8 +20,20 @@ router.get('/profile', middleware.user(), async (req, res) => {
   const spaceClient = new SpaceClient({ wallet, endpoint: user.didSpace.endpoint });
   try {
     const { data } = await spaceClient.send(new GetObjectCommand({ key: PROFILE_KEY }));
-    return res.json({ profile: JSON.parse(await streamToString(data)) });
+    return res.json({ profile: await streamToString(data) });
   } catch (error) {
+    if (error.message.includes('404')) {
+      // first time, set default profile
+      const defaultProfile: Profile = {
+        username: 'test',
+        email: 'test@test.com',
+        phone: '1234567890',
+      };
+
+      await spaceClient.send(new PutObjectCommand({ key: PROFILE_KEY, data: JSON.stringify(defaultProfile) }));
+      return res.json(defaultProfile);
+    }
+
     console.error(error);
     return res.status(400).send(error.message);
   }

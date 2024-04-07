@@ -4,6 +4,7 @@ import { GetObjectCommand, PutObjectCommand, SpaceClient } from '@did-space/clie
 import { streamToString } from '@did-space/core';
 import { authService, wallet } from './libs/auth';
 import { Profile } from '../../common/types';
+import rules from '../../common/rules';
 
 const PROFILE_KEY = 'profile.json';
 
@@ -40,6 +41,13 @@ router.get('/profile', middleware.user(), async (req, res) => {
 });
 
 router.put('/profile', middleware.user(), async (req, res) => {
+  // validate
+  for (const [key, regex] of Object.entries(rules)) {
+    if (!regex.test(req.body[key])) {
+      return res.status(400).send(`Invalid ${key}`);
+    }
+  }
+
   const { user } = await authService.getUser(req.user!.did);
   if (!user.didSpace.endpoint) {
     return res.status(404).send('DID Spaces endpoint does not exist. Log in again to complete the authorization');

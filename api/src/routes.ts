@@ -46,7 +46,7 @@ router.put('/profile', middleware.user(), async (req, res) => {
   }
 
   const spaceClient = new SpaceClient({ wallet, endpoint: user.didSpace.endpoint });
-  await spaceClient.send(new PutObjectCommand({ key: PROFILE_KEY, data: JSON.stringify(req.body.profile) }));
+  await spaceClient.send(new PutObjectCommand({ key: PROFILE_KEY, data: JSON.stringify(req.body) }));
 
   return res.send();
 });

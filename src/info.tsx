@@ -11,8 +11,9 @@ type State = { isEditing: boolean; current?: Profile; input?: Profile };
 type Action =
   | { type: 'init'; profile: Profile }
   | { type: 'toggle-edit' }
-  | { type: 'update'; field: keyof Profile; value: string }
-  | { type: 'commit' };
+  | { type: 'add'; field: keyof Profile; value: string }
+  | { type: 'commit' }
+  | { type: 'cancel' };
 
 const initialState: State = {
   isEditing: false,
@@ -30,7 +31,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         isEditing: !state.isEditing,
       };
-    case 'update':
+    case 'add':
       return {
         ...state,
         input: {
@@ -39,7 +40,17 @@ const reducer: Reducer<State, Action> = (state, action) => {
         },
       };
     case 'commit':
-      return state;
+      return {
+        ...state,
+        current: state.input,
+        isEditing: false,
+      };
+    case 'cancel':
+      return {
+        ...state,
+        input: state.current,
+        isEditing: false,
+      };
     default:
       return state;
   }
@@ -78,7 +89,7 @@ const Info: FC = function Info() {
                     disabled={!isEditing}
                     value={input[key]}
                     onChange={(e) => {
-                      dispatch({ type: 'update', field: key, value: e.target.value });
+                      dispatch({ type: 'add', field: key, value: e.target.value });
                     }}
                   />
                 </Grid>
@@ -91,17 +102,16 @@ const Info: FC = function Info() {
                 <>
                   <Button
                     variant="contained"
-                    onClick={() => {
-                      // TODO: save
-                      dispatch({ type: 'toggle-edit' });
+                    onClick={async () => {
+                      await axios.put('/api/profile', input);
+                      dispatch({ type: 'commit' });
                     }}>
                     {t.save}
                   </Button>
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      // TODO: cancel
-                      dispatch({ type: 'toggle-edit' });
+                      dispatch({ type: 'cancel' });
                     }}>
                     {t.cancel}
                   </Button>

@@ -111,12 +111,15 @@ const ProfileEditor: FC = function Info() {
               return (
                 <Grid key={key} item xs={12} sm={6} md={4}>
                   <TextField
+                    style={isEditing ? {} : { paddingBottom: 8 }}
                     variant={isEditing ? undefined : 'standard'}
                     fullWidth
                     label={t[key]}
                     InputProps={{
                       readOnly: !isEditing,
-                      endAdornment: isEditing ? undefined : <CopyButton locale={locale} content={getValues(key)} />,
+                      endAdornment: isEditing ? undefined : (
+                        <CopyButton style={{ color: '#757575' }} locale={locale} content={getValues(key)} />
+                      ),
                     }}
                     InputLabelProps={{
                       shrink: true,

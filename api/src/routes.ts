@@ -20,7 +20,7 @@ router.get('/profile', middleware.user(), async (req, res) => {
   const spaceClient = new SpaceClient({ wallet, endpoint: user.didSpace.endpoint });
   try {
     const { data } = await spaceClient.send(new GetObjectCommand({ key: PROFILE_KEY }));
-    return res.json({ profile: await streamToString(data) });
+    return res.json(JSON.parse(await streamToString(data)));
   } catch (error) {
     if (error.message.includes('404')) {
       // first time, set default profile

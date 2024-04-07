@@ -2,8 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches:
-      - main
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   Deploy:
@@ -15,11 +16,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Set yarn cache
-        uses: c-hive/gha-yarn-cache@v2
-
       - name: Install dependencies
-        run: yarn
+        run: pnpm install
 
       - name: Blocklet workflow
         uses: blocklet/action-workflow@v1

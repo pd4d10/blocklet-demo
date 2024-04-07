@@ -72,6 +72,7 @@ const Info: FC = function Info() {
     ['phone'],
   ] as const;
   const {
+    setFocus,
     register,
     reset,
     handleSubmit,
@@ -93,6 +94,13 @@ const Info: FC = function Info() {
     };
     init();
   }, []);
+
+  // auto foucs the first input when start editing
+  useEffect(() => {
+    if (isEditing) {
+      setFocus('username');
+    }
+  }, [isEditing, setFocus]);
 
   return (
     <Container className={style.container} maxWidth="lg">

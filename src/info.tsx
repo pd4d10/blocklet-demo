@@ -9,6 +9,7 @@ import style from './info.module.css';
 import locales from './locales';
 import axios from './libs/api';
 import { Profile } from '../common/types';
+import rules from '../common/rules';
 
 type State = {
   isEditing: boolean;
@@ -112,7 +113,10 @@ const Info: FC = function Info() {
                       shrink: true,
                     }}
                     error={errors[key] != null}
-                    {...register(key, { required: true })}
+                    {...register(key, {
+                      required: true,
+                      validate: (value) => rules[key]?.test(value) ?? true,
+                    })}
                   />
                 </Grid>
               );

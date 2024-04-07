@@ -9,16 +9,23 @@ import locales from './locales';
 import axios from './libs/api';
 import { Profile } from '../common/types';
 
-type State = { isEditing: boolean; current?: Profile; input?: Profile };
+type State = {
+  isEditing: boolean;
+  isSaving: boolean;
+  current?: Profile;
+  input?: Profile;
+};
 type Action =
   | { type: 'init'; profile: Profile }
-  | { type: 'toggle-edit' }
+  | { type: 'enter-edit' }
+  | { type: 'start-save' }
   | { type: 'add'; field: keyof Profile; value: string }
   | { type: 'commit' }
   | { type: 'cancel' };
 
 const initialState: State = {
   isEditing: false,
+  isSaving: false,
 };
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -28,10 +35,15 @@ const reducer: Reducer<State, Action> = (state, action) => {
         current: action.profile,
         input: action.profile,
       };
-    case 'toggle-edit':
+    case 'enter-edit':
       return {
         ...state,
-        isEditing: !state.isEditing,
+        isEditing: true,
+      };
+    case 'start-save':
+      return {
+        ...state,
+        isSaving: true,
       };
     case 'add':
       return {
@@ -46,6 +58,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         current: state.input,
         isEditing: false,
+        isSaving: false,
       };
     case 'cancel':
       return {
@@ -59,7 +72,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 };
 
 const Info: FC = function Info() {
-  const [{ isEditing, input, current }, dispatch] = useReducer(reducer, initialState);
+  const [{ isEditing, isSaving, input, current }, dispatch] = useReducer(reducer, initialState);
   const { locale } = useLocaleContext();
   const t = locales[locale as keyof typeof locales] ?? locales.en;
 
@@ -103,15 +116,20 @@ const Info: FC = function Info() {
               {isEditing ? (
                 <>
                   <Button
+                    disabled={isSaving}
+                    loading={isSaving}
                     variant="contained"
                     onClick={async () => {
+                      dispatch({ type: 'start-save' });
                       await axios.put('/api/profile', input);
-                      Toast.success(t.saveSucceed);
                       dispatch({ type: 'commit' });
+
+                      Toast.success(t.saveSucceed);
                     }}>
                     {t.save}
                   </Button>
                   <Button
+                    disabled={isSaving}
                     variant="outlined"
                     onClick={() => {
                       dispatch({ type: 'cancel' });
@@ -123,7 +141,7 @@ const Info: FC = function Info() {
                 <Button
                   variant="contained"
                   onClick={() => {
-                    dispatch({ type: 'toggle-edit' });
+                    dispatch({ type: 'enter-edit' });
                   }}>
                   {t.edit}
                 </Button>

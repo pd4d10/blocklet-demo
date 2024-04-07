@@ -4,6 +4,7 @@ import ActivityIndicator from '@arcblock/ux/lib/ActivityIndicator';
 import { FC, Reducer, useContext, useEffect, useReducer } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Toast from '@arcblock/ux/lib/Toast';
+import { CopyButton } from '@arcblock/ux/lib/ClickToCopy';
 import { axios } from './utils';
 import { Profile } from '../common/types';
 import rules from '../common/rules';
@@ -61,10 +62,11 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 const ProfileEditor: FC = function Info() {
   const [{ isEditing, isSaving, current }, dispatch] = useReducer(reducer, initialState);
-  const { t } = useContext(MyLocaleContext);
+  const { t, locale } = useContext(MyLocaleContext);
 
   const {
     setFocus,
+    getValues,
     register,
     reset,
     handleSubmit,
@@ -114,6 +116,7 @@ const ProfileEditor: FC = function Info() {
                     label={t[key]}
                     InputProps={{
                       readOnly: !isEditing,
+                      endAdornment: isEditing ? undefined : <CopyButton locale={locale} content={getValues(key)} />,
                     }}
                     InputLabelProps={{
                       shrink: true,

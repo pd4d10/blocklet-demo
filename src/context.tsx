@@ -1,17 +1,23 @@
 import { FC, PropsWithChildren, createContext, useMemo } from 'react';
 import { useLocaleContext } from '@arcblock/ux/lib/Locale/context';
-
 import { locales } from './utils';
 
-export const MyLocaleContext = createContext({
-  t: {} as typeof locales.en,
+type ContextValue = {
+  t: typeof locales.en;
+  locale: keyof typeof locales;
+};
+
+export const MyLocaleContext = createContext<ContextValue>({
+  t: locales.en,
+  locale: 'en',
 });
 
 export const MyLocaleProvider: FC<PropsWithChildren> = function LocaleProvider({ children }) {
-  const { locale } = useLocaleContext();
-  const value = useMemo(() => {
+  const locale = useLocaleContext().locale as ContextValue['locale'];
+  const value: ContextValue = useMemo(() => {
     return {
-      t: locales[locale as keyof typeof locales] ?? locales.en,
+      t: locales[locale] ?? locales.en,
+      locale,
     };
   }, [locale]);
 

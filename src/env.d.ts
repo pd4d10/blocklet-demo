@@ -4,4 +4,5 @@
 declare const blocklet: { prefix: string } | undefined;
 
 declare module '@arcblock/ux/*';
+declare module '@arcblock/icons';
 declare module '@arcblock/did-connect/*';
